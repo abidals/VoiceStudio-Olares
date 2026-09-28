@@ -1,0 +1,63 @@
+name: Release chart
+
+on:
+  push:
+    tags:
+      - "chart-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Lint chart
+        run: helm lint charts/voicestudio
+
+      - name: Read chart version
+        id: chart
+        run: |
+          VER=$(sed -n 's/^version: //p' charts/voicestudio/Chart.yaml)
+          APP=$(sed -n 's/^appVersion: *//p' charts/voicestudio/Chart.yaml | tr -d '"')
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "upstream=$APP" >> "$GITHUB_OUTPUT"
+          echo "Chart version: $VER (upstream $APP)"
+
+      - name: Package chart
+        run: |
+          mkdir -p dist
+          helm package charts/voicestudio --destination dist
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: VoiceStudio on Olares — chart v${{ steps.chart.outputs.version }}
+          body: |
+            Olares chart for VoiceStudio (upstream backend `${{ steps.chart.outputs.upstream }}`).
+
+            ## Install on your Olares
+            ```sh
+            olares-cli market upload voicestudio-${{ steps.chart.outputs.version }}.tgz
+            olares-cli market install voicestudio -s upload --version ${{ steps.chart.outputs.version }} \
+              --compute-mode nvidia \
+              --env OMNIVOICE_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+            ```
+            Choose `--compute-mode cpu` on machines without an NVIDIA GPU. Full guide: see the repo README.
+
+            First run of the app downloads the default model (~2.4 GB) into the shared model cache.
+          draft: false
+          prerelease: false
+          files: dist/*.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,48 @@
+metadata:
+  title: VoiceStudio
+  description: Fully-local voice cloning, video dubbing, dictation, transcription &
+    audiobook creation in 646 languages — the open-source ElevenLabs alternative.
+spec:
+  fullDescription: |
+    **VoiceStudio** is the open-source, fully-local **ElevenLabs alternative** — clone voices, dub videos, dictate, transcribe, and produce audiobooks on your own hardware. This chart wraps the official headless **web-server** image for Olares; nothing leaves your machine, and no external service is required for the core workflows.
+
+    ## WORKFLOWS
+
+    - **Voice cloning** — zero-shot synthesis from a short reference clip (3 s works; 5–15 s recommended).
+    - **Voice design** — create a voice from age, accent, pitch, style, and delivery notes.
+    - **Video dubbing** — transcribe, translate with speaker preservation, synthesize, and export; supports URL import and YouTube sign-in.
+    - **Stories & audiobooks** — multi-voice scripts, EPUB/PDF import, chapter rendering, `.m4b` export.
+    - **Dictation** — system-wide shortcut, live transcription through the browser and OpenAI-compatible streaming endpoint.
+    - **Speaker diarization & vocal isolation** — Pyannote/WhisperX speakers, Demucs separation.
+    - **Batch queue** — queue large audio/video job sets with per-job progress.
+    - **AI watermarking** — AudioSeal embedding and detection, on by default for synthetic speech.
+
+    ## ENGINES
+
+    16 TTS engines and 11 ASR engines are available through the built-in Model Catalogue, including the default **OmniVoice** (600+ languages, cloning + instruct), CosyVoice 3, GPT-SoVITS, VoxCPM2, PocketTTS, Sherpa-ONNX, and the OpenAI-compatible ASR engine (which can point at Olares' local AI gateway — set the base URL and key in **Model Catalogue → OpenAI-compatible**, copied from your *Settings → AI* values).
+
+    ## FIRST RUN
+
+    The default **OmniVoice** model (~2.4 GB) is **not** bundled. The first generation or **Model Catalogue → install** action downloads it into Olares' cross-app shared model cache (`Common/huggingface`); other installed AI apps reuse the same copy. Each engine downloads its own weights on first use.
+
+    ## GPU
+
+    With **NVIDIA mode** the app receives a *dedicated slice* of the GPU — this chart claims a 6 Gi memory floor capped at 16 Gi of VRAM (via HAMi vGPU quota). The card stays shared with other apps; heavy engines scale their internal job pool to fit what was reserved. Choose **CPU mode** at install time on machines without NVIDIA GPUs.
+
+    ## PRIVACY & SECURITY
+
+    - Everything runs in your user's sandbox: isolated namespace, uid 1000, only `appData` (projects, voices, settings) and the shared `Common` model cache are writable.
+    - The entrance is reachable without an Olares login so native desktop apps can sync — but every API rule (including model downloads and settings changes) requires your instance's **OMNIVOICE_API_KEY**, chosen only by you at install time.
+    - Loopback-only backend by upstream design; the headless server-mode gate ships enabled. Analytics is off by default.
+    - Downloaded models keep their upstream licenses; the OmniVoice weights are CC-BY-NC.
+
+    ## SYNC WITH NATIVE APPS
+
+    Point the native VoiceStudio desktop app on your Mac/PC at this Olares address with the backend URL shown on the install card plus your API key. Heavy generation then runs on this NVIDIA-class box while you work remotely. OpenAI-compatible clients set `base_url` to `https://<your-entrance-host>/v1` with the API key.
+
+    ## REQUIREMENTS
+
+    - **NVIDIA mode:** amd64 node + driver, ≥ 4 GB VRAM (8 GB+ recommended; large optional engines need 12–16 GB).
+    - **CPU mode:** 8 GB+ RAM free.
+    - **Disk:** ~10 GB floor for data; model weights land in the shared cache (tens of GB as you install more engines).
+    - First boot is slower (model download + engine warmup); long jobs (dubbing, audiobook render) are unaffected by request timeouts — the chart disables the entrance proxy timeout for this app.

@@ -1,0 +1,22 @@
+apiVersion: v2
+name: voicestudio
+description: Fully-local voice cloning, video dubbing, dictation, transcription & audiobook studio in 646 languages.
+type: application
+version: 1.0.1
+appVersion: "0.5.6"
+keywords:
+- ai
+- voice
+- tts
+- asr
+- dubbing
+- transcription
+- audiobook
+home: https://voicestudio.sh
+sources:
+- https://github.com/debpalash/VoiceStudio
+- https://github.com/abidals/VoiceStudio-Olares
+maintainers:
+- name: abidals
+icon: https://voicestudio.sh/logo.svg
+license: AGPL-3.0
