@@ -22,7 +22,12 @@ jobs:
           version: v3.14.4
 
       - name: Lint chart
-        run: helm lint charts/voicestudio
+        run: |
+          helm lint charts/voicestudio \
+            --set olaresEnv.OMNIVOICE_API_KEY=lint-placeholder-key-value \
+            --set userspace.appData=/tmp/appData/voicestudio \
+            --set userspace.appCommon=/tmp/Common \
+            --set domain.voicestudio=voicestudio.example.com
 
       - name: Read chart version
         id: chart

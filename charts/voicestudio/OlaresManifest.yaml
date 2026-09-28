@@ -8,7 +8,7 @@ metadata:
   description: Fully-local voice cloning, video dubbing, dictation, transcription &
     audiobook creation in 646 languages — the open-source ElevenLabs alternative.
   icon: https://voicestudio.sh/logo.svg
-  version: 1.0.1
+  version: 1.0.2
   categories:
   - AI
   - Creativity
